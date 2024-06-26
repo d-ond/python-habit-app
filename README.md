@@ -7,3 +7,6 @@ The user is able to specify a habit to track
 
 ## Delete habit
 The user is able to specify a habit to delete
+
+# In progress
+- [ ] [Update functionality](https://github.com/dndorc/python-habit-app/issues/1)
