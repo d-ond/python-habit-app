@@ -1,54 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
-import sqlite3
+from HabitManager import *
 
-class HabitManager:
-    def __init__(self, db_path):
-        self.conn = sqlite3.connect(db_path)
-        self.cursor = self.conn.cursor()
-
-    def get_habits(self):
-        self.cursor.execute("SELECT * FROM habits")
-        return self.cursor.fetchall()
-
-    def get_dates(self):
-        self.cursor.execute("SELECT * FROM dates ORDER BY date ASC")
-        return self.cursor.fetchall()
-
-    def get_habit_statuses(self):
-        self.cursor.execute(
-            "SELECT h.habit_name, d.date, ht.status " +
-            "FROM habit_tracker ht " +
-            "JOIN dates d ON ht.date = d.date " +
-            "JOIN habits h ON ht.habit_id = h.habit_id " +
-            "ORDER BY h.habit_name, d.date"
-        )
-        return self.cursor.fetchall()
-    
-    def add_habit(self, habit):
-        try:
-            self.cursor.execute("INSERT INTO habits (habit_name) VALUES (?)", (habit,))
-            self.conn.commit()
-
-            self.cursor.execute("SELECT habit_id FROM habits WHERE habit_name = ?", (habit,))
-            habit_id = self.cursor.fetchone()[0]
-
-            add_into_dates = f"INSERT INTO habit_tracker (date, habit_id, status) SELECT date, {habit_id}, 0 FROM dates"
-            self.cursor.execute(add_into_dates)
-            self.conn.commit()
-        except sqlite3.Error as e:
-            print(f"Error - {e}")
-        return
-    
-    def delete_habit(self, habit):
-        try:
-            self.cursor.execute("DELETE FROM habit_tracker WHERE habit_id = (SELECT habit_id FROM habits WHERE habit_name = ?)", (habit,))
-            self.cursor.execute("DELETE FROM habits WHERE habit_name = ?", (habit,))
-            self.conn.commit()
-        except sqlite3.Error as e:
-            print(f"Error - {e}")
-
-class HabitApp:
+class MainMenu:
     def __init__(self, root, habit_manager):
         self.root = root
         self.habit_manager = habit_manager
@@ -83,6 +37,8 @@ class HabitApp:
 
         self.display_habits()
 
+        self.tree.bind('<Double-1>', self.toggle_status)
+
     def display_habits(self):
         for item in self.tree.get_children():
             self.tree.delete(item)
@@ -101,6 +57,20 @@ class HabitApp:
             values = [habit_name] + [statuses.get(date, "") for date in dates]
             self.tree.insert("", "end", values=values)
 
+    def toggle_status(self, event):
+        try:
+            item = self.tree.selection()[0]
+            column = self.tree.identify_column(event.x)
+            habit_name = self.tree.item(item, "values")[0]
+            date_index = int(column.replace("#", "")) - 2
+            date = self.habit_manager.get_dates()[date_index][0]
+
+            self.habit_manager.toggle_habit_status(habit_name, date)
+        except:
+            self.display_habits()
+        self.display_habits()
+
+# input from the user handled and passed to the manager
 def add_habit():
     def submit_habit():
         habit = habit_var.get()
@@ -117,6 +87,7 @@ def add_habit():
     sub_btn = tk.Button(add_win, text='Submit', command=submit_habit)
     sub_btn.grid(row=1, column=0)
 
+# input from the user handled and passed to manager
 def delete_habit():
     def submit_delete():
         habit = habit_var.get()
@@ -133,14 +104,16 @@ def delete_habit():
     sub_btn = tk.Button(delete_win, text='Submit', command=submit_delete)
     sub_btn.grid(row=1, column=0)
 
+# Overall display of the app
 root = tk.Tk()
 root.title("Habit Tracker")
 root.geometry("450x800")
 root.config(bg="black")
 
 habit_manager = HabitManager('test.db')
-app = HabitApp(root, habit_manager)
+app = MainMenu(root, habit_manager)
 
+# menu bar
 menu_bar = tk.Menu(root)
 habit_menu = tk.Menu(menu_bar, tearoff=0)
 habit_menu.add_command(label="Create Habit", command=add_habit)
