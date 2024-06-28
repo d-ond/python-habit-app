@@ -16,4 +16,5 @@ Program will check what the current date is and then adjust the database to add 
 
 # In progress
 - [x] [Update functionality](https://github.com/dndorc/python-habit-app/issues/1)
-- [ ] Build as program for download
+- [x] Build as program for download
+- [ ] First time setup of database

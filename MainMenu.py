@@ -107,7 +107,7 @@ def delete_habit():
 # Overall display of the app
 root = tk.Tk()
 root.title("Habit Tracker")
-root.geometry("450x800")
+root.geometry("270x480")
 root.config(bg="black")
 
 habit_manager = HabitManager('test.db')

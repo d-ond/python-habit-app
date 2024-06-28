@@ -17,12 +17,11 @@ class HabitManager:
         return self.cursor.fetchall()
 
     def get_habit_statuses(self):
-        self.cursor.execute(
-            "SELECT h.habit_name, d.date, ht.status " +
-            "FROM habit_tracker ht " +
-            "JOIN dates d ON ht.date = d.date " +
-            "JOIN habits h ON ht.habit_id = h.habit_id " +
-            "ORDER BY h.habit_name, d.date"
+        self.cursor.execute("SELECT h.habit_name, d.date, ht.status "
+            + "FROM habit_tracker ht "
+            + "JOIN dates d ON ht.date = d.date "
+            + "JOIN habits h ON ht.habit_id = h.habit_id "
+            + "ORDER BY h.habit_name, d.date"
         )
         return self.cursor.fetchall()
     
@@ -37,17 +36,16 @@ class HabitManager:
             add_into_dates = f"INSERT INTO habit_tracker (date, habit_id, status) SELECT date, {habit_id}, 0 FROM dates"
             self.cursor.execute(add_into_dates)
             self.conn.commit()
-        except sqlite3.Error as e:
-            print(f"Error - {e}")
-        return
+        except: 
+            return
     
     def delete_habit(self, habit):
         try:
             self.cursor.execute("DELETE FROM habit_tracker WHERE habit_id = (SELECT habit_id FROM habits WHERE habit_name = ?)", (habit,))
             self.cursor.execute("DELETE FROM habits WHERE habit_name = ?", (habit,))
             self.conn.commit()
-        except sqlite3.Error as e:
-            print(f"Error - {e}")
+        except:
+            return
 
     def toggle_habit_status(self, habit_name, date):
         try:
@@ -57,8 +55,8 @@ class HabitManager:
                 (habit_name, date)
             )
             self.conn.commit()
-        except sqlite3.Error as e:
-            print(f"Error - {e}")
+        except:
+            return
 
     def update_dates(self):
         self.cursor.execute("SELECT date FROM dates ORDER BY date DESC LIMIT 1")
