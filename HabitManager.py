@@ -1,6 +1,8 @@
 import sqlite3
 from datetime import datetime, timedelta
 
+# file for managing (add, delete, updating) the habits in the database
+
 class HabitManager:
     def __init__(self, db_path):
         self.conn = sqlite3.connect(db_path)

@@ -1,6 +1,7 @@
 import sqlite3
 from datetime import datetime, timedelta
 
+# file for first time use 
 def add_previous_dates():
         date_end = datetime(year=datetime.now().year, month=datetime.now().month, day=datetime.now().day)
         date_start = date_end
