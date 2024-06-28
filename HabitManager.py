@@ -6,7 +6,6 @@ class HabitManager:
         self.conn = sqlite3.connect(db_path)
         self.cursor = self.conn.cursor()
         self.update_dates()
-        self.add_june_dates()
 
     def get_habits(self):
         self.cursor.execute("SELECT * FROM habits")
@@ -69,28 +68,6 @@ class HabitManager:
         while start_date.date() <= current_date.date():
             date_list.append(start_date.strftime("%Y-%m-%d"))
             start_date += timedelta(days=1)
-
-        self.cursor.executemany("INSERT OR IGNORE INTO dates (date) VALUES (?)", [(date,) for date in date_list])
-        self.conn.commit()
-
-        self.cursor.execute("SELECT habit_id FROM habits")
-        habit_ids = [habit[0] for habit in self.cursor.fetchall()]
-
-        for habit_id in habit_ids:
-            self.cursor.executemany(
-                "INSERT OR IGNORE INTO habit_tracker (date, habit_id, status) VALUES (?, ?, 0)",
-                [(date, habit_id) for date in date_list]
-            )
-        self.conn.commit()
-
-    def add_june_dates(self):
-        june_start = datetime(year=datetime.now().year, month=6, day=1)
-        june_end = datetime(year=datetime.now().year, month=6, day=30)
-        date_list = []
-
-        while june_start.date() <= june_end.date():
-            date_list.append(june_start.strftime("%Y-%m-%d"))
-            june_start += timedelta(days=1)
 
         self.cursor.executemany("INSERT OR IGNORE INTO dates (date) VALUES (?)", [(date,) for date in date_list])
         self.conn.commit()

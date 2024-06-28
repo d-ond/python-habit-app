@@ -1,6 +1,8 @@
+import sqlite3
 import tkinter as tk
 from tkinter import ttk
 from HabitManager import *
+from DatabaseManager import *
 
 class MainMenu:
     def __init__(self, root, habit_manager):
@@ -9,7 +11,7 @@ class MainMenu:
         self.root.title("Habit Tracker")
 
         dates = self.habit_manager.get_dates()
-        columns = ["Habit"] + [date[0] for date in dates]
+        columns = ["Habit"] + [date[0][5:] for date in dates]
 
         self.tree_frame = tk.Frame(self.root)
         self.tree_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
@@ -31,7 +33,7 @@ class MainMenu:
             if i == 0:
                 self.tree.column(columns[i], width=75, minwidth=75, stretch=tk.YES)
             else:
-                self.tree.column(columns[i], width=25, minwidth=25, stretch=tk.YES)
+                self.tree.column(columns[i], width=50, minwidth=25, stretch=tk.YES)
 
         self.tree.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
@@ -110,7 +112,9 @@ root.title("Habit Tracker")
 root.geometry("270x480")
 root.config(bg="black")
 
-habit_manager = HabitManager('test.db')
+file = "HabitDatabase.db"
+
+habit_manager = HabitManager(file)
 app = MainMenu(root, habit_manager)
 
 # menu bar

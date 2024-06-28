@@ -1,5 +1,7 @@
-test.db
+*.db
 __pycache__/*
 build/*
 dist/*
 .venv/*
+MainMenu.spec
+
