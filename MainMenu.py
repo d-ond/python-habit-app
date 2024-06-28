@@ -1,8 +1,6 @@
-import sqlite3
 import tkinter as tk
 from tkinter import ttk
-from HabitManager import *
-from DatabaseManager import *
+from HabitManager import HabitManager
 
 class MainMenu:
     def __init__(self, root, habit_manager):
@@ -16,6 +14,7 @@ class MainMenu:
         self.tree_frame = tk.Frame(self.root)
         self.tree_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
+        # create a vertical and horizontal scrollbar to keep the window smaller
         vsb = ttk.Scrollbar(self.tree_frame, orient="vertical")
         vsb.pack(side=tk.RIGHT, fill=tk.Y)
         
@@ -41,6 +40,7 @@ class MainMenu:
 
         self.tree.bind('<Double-1>', self.toggle_status)
 
+    # view can be customized ideally
     def display_habits(self):
         for item in self.tree.get_children():
             self.tree.delete(item)
@@ -119,12 +119,16 @@ app = MainMenu(root, habit_manager)
 
 # menu bar
 menu_bar = tk.Menu(root)
-habit_menu = tk.Menu(menu_bar, tearoff=0)
-habit_menu.add_command(label="Create Habit", command=add_habit)
-habit_menu.add_command(label="Delete Habit", command=delete_habit)
-habit_menu.add_separator()
-habit_menu.add_command(label="Exit", command=root.quit)
-menu_bar.add_cascade(label="Habits", menu=habit_menu)
+file_menu = tk.Menu(menu_bar, tearoff=0)
+file_menu.add_command(label="Create Habit", command=add_habit)
+file_menu.add_command(label="Delete Habit", command=delete_habit)
+file_menu.add_separator()
+file_menu.add_command(label="Exit", command=root.quit)
+menu_bar.add_cascade(label="File", menu=file_menu)
+edit_menu = tk.Menu(menu_bar, tearoff=0)
+edit_menu.add_command(label="Create Habit", command=add_habit)
+menu_bar.add_cascade(label="Edit", menu=edit_menu)
+
 root.config(menu=menu_bar)
 
 root.mainloop()
